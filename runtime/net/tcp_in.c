@@ -155,7 +155,7 @@ drain:
 		tcp_rx_append_text(c, pos);
 	}
 
-	if (c->pcb.rcv_wnd == 0)
+	if (c->pcb.rcv_wnd <= TCP_MSS)
 		*wake = true;
 
 	return true;
