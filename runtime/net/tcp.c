@@ -711,7 +711,7 @@ static ssize_t tcp_read_wait(tcpconn_t *c, size_t len,
 	}
 
 	c->pcb.rcv_wnd += readlen;
-	if (unlikely(c->rcv_wnd_full && c->pcb.rcv_wnd >= TCP_WIN / 4)) {
+	if (unlikely(c->rcv_wnd_full && c->pcb.rcv_wnd >= TCP_MSS * 2)) {
 		tcp_tx_ack(c);
 		c->rcv_wnd_full = false;
 	}
