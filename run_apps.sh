@@ -42,7 +42,7 @@ outlabel="$config"
 echo "Starting $outlabel";
 
 # Spawn IOkernel
-NUMA_COUNT=1 sudo ./iokerneld simple $use_cores 2>&1 | tee $outlabel.iokernel &
+sudo NUMA_COUNT=1 ./iokerneld simple $use_cores 2>&1 | tee $outlabel.iokernel &
 pids+=($!);
 echo "Launched IOKernel";
 
