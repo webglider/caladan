@@ -178,6 +178,7 @@ static inline unsigned int numa_choose_core_in_subset(struct numa_data *sd,
 						numa_proc_is_preemptible(cores[core], sd)))
 			return core;
 
+#ifndef NOHT
 		/* sibling core has equally good locality */
 		core = sched_siblings[core];
 		if (!bitmap_test(core_subset, core))
@@ -186,6 +187,7 @@ static inline unsigned int numa_choose_core_in_subset(struct numa_data *sd,
 		if (cores[core] != sd && (cores[core] == NULL ||
 						numa_proc_is_preemptible(cores[core], sd)))
 			return core;
+#endif
 	}
 
 	/* check for an idle core */
@@ -210,9 +212,11 @@ static inline unsigned int numa_choose_core_in_subset(struct numa_data *sd,
 static unsigned int numa_choose_core(struct proc *p)
 {
 	struct numa_data *sd = (struct numa_data *)p->policy_data;
-	unsigned int core, tmp;
+	unsigned int core;
 	DEFINE_BITMAP(core_subset, NCPU);
 
+#ifndef NOHT
+	unsigned int tmp;
 	/* first try to find a matching active hyperthread */
 	if (!cfg.noht) {
 		sched_for_each_allowed_core(core, tmp) {
@@ -226,6 +230,7 @@ static unsigned int numa_choose_core(struct proc *p)
 			return sib;
 		}
 	}
+#endif
 
 	/* then try to find a core on the preferred socket */
 	bitmap_and(core_subset, sched_allowed_cores,
@@ -304,10 +309,12 @@ static struct numa_data *numa_choose_kthread(unsigned int core)
 	struct numa_data *sd;
 	int i;
 
+#ifndef NOHT
 	/* first try to run the same process as the sibling */
 	sd = cores[sched_siblings[core]];
 	if (sd && sd->is_congested)
 		return sd;
+#endif
 
 	/* then try to find a congested process that ran on this core last */
 	for (i = 0; i < NHIST; i++) {
@@ -315,10 +322,12 @@ static struct numa_data *numa_choose_kthread(unsigned int core)
 		if (sd && sd->is_congested)
 			return sd;
 
+#ifndef NOHT
 		/* the hyperthread sibling has equally good locality */
 		sd = hist[sched_siblings[core]][i];
 		if (sd && sd->is_congested)
 			return sd;
+#endif
 	}
 
 	/* then try to find any congested process */

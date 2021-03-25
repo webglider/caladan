@@ -60,6 +60,9 @@ RUNTIME_LIBS += $(MLX5_LIBS)
 INC += $(MLX5_INC)
 FLAGS += -DDIRECTPATH
 endif
+ifeq ($(CONFIG_NOHT),y)
+FLAGS += -DNOHT
+endif
 
 CFLAGS = -std=gnu11 $(FLAGS)
 CXXFLAGS = -std=gnu++11 $(FLAGS)
