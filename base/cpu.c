@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/syscall.h>
 
 #include <base/stddef.h>
@@ -41,6 +42,11 @@ static int cpu_scan_topology(void)
 			log_err("cpu: can't support non-contiguous NUMA mask.");
 			return -EINVAL;
 		}
+	}
+
+	const char *env_numa_count = getenv("NUMA_COUNT");
+	if(env_numa_count != NULL) {
+		numa_count = atoi(env_numa_count);
 	}
 
 	if (numa_count <= 0 || numa_count > NNUMA) {
