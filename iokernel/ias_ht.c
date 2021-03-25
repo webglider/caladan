@@ -1,7 +1,7 @@
 /*
  * ias_ht.c - the hyperthread subcontroller
  */
-
+#ifndef NOHT
 #include <stdlib.h>
 #include <float.h>
 
@@ -206,3 +206,5 @@ unsigned int ias_ht_relinquish_core(struct ias_data *sd)
 
 	return NCPU;
 }
+
+#endif

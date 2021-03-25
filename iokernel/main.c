@@ -39,7 +39,9 @@ static const struct init_entry iok_init_handlers[] = {
 	IOK_INITIALIZER(sched),
 	IOK_INITIALIZER(simple),
 	IOK_INITIALIZER(numa),
+#ifndef NOHT
 	IOK_INITIALIZER(ias),
+#endif
 
 	/* control plane */
 	IOK_INITIALIZER(control),
@@ -152,9 +154,13 @@ int main(int argc, char *argv[])
 			sched_ops = &simple_ops;
 		} else if (!strcmp(argv[1], "numa")) {
 			sched_ops = &numa_ops;
-		} else if (!strcmp(argv[1], "ias")) {
+		}
+#ifndef NOHT 
+		else if (!strcmp(argv[1], "ias")) {
 			sched_ops = &ias_ops;
-		} else {
+		} 
+#endif
+		else {
 			print_usage();
 			return -EINVAL;
 		}

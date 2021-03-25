@@ -19,8 +19,10 @@
 /* a bitmap of cores available to be allocated by the scheduler */
 DEFINE_BITMAP(sched_allowed_cores, NCPU);
 
+#ifndef NOHT
 /* maps each cpu number to the cpu number of its hyperthread buddy */
 unsigned int sched_siblings[NCPU];
+#endif
 
 /* core assignments */
 unsigned int sched_dp_core;	/* used for the iokernel's dataplane */
@@ -32,8 +34,11 @@ struct socket socket_state[NNUMA];
 /* arrays of core numbers for fast polling */
 unsigned int sched_cores_tbl[NCPU];
 int sched_cores_nr;
+
+#ifndef NOHT
 unsigned int sched_siblings_tbl[NCPU];
 int sched_siblings_nr;
+#endif
 
 struct core_state {
 	struct thread	*pending_th;  /* a thread waiting run */
@@ -131,10 +136,12 @@ static struct thread *sched_pick_kthread(struct proc *p, unsigned int core)
 	}
 
 	/* then try to find a thread that last ran on this core's sibling */
+#ifndef NOHT
 	list_for_each(&p->idle_threads, th, idle_link) {
 		if (th->core == sched_siblings[core])
 			return th;
 	}
+#endif
 
 	/* finally pick the least recently used thread (to avoid thrashing) */
 	return list_tail(&p->idle_threads, struct thread, idle_link);
@@ -619,7 +626,8 @@ void sched_detach_proc(struct proc *p)
 static int sched_scan_node(int node)
 {
 	struct cpu_info *info;
-	int i, sib, ret = 0;
+
+	int i, ret = 0;
 
 	for (i = 0; i < cpu_count; i++) {
 		info = &cpu_info_tbl[i];
@@ -628,7 +636,9 @@ static int sched_scan_node(int node)
 
 		bitmap_set(socket_state[node].cores, i);
 
+#ifndef NOHT
 		/* TODO: can only support hyperthread pairs */
+		int sib;
 		if (bitmap_popcount(info->thread_siblings_mask, NCPU) != 2)
 			ret = -EINVAL;
 
@@ -641,6 +651,9 @@ static int sched_scan_node(int node)
 		sched_siblings[i] = sib;
 		if (i < sib)
 			printf("[%d,%d]", i, sib);
+#else
+		printf("[%d]", i);
+#endif
 	}
 
 	return ret;
@@ -653,7 +666,7 @@ static int sched_scan_node(int node)
  */
 int sched_init(void)
 {
-	int i, sib;
+	int i, ctrl_core;
 	bool valid = true;
 
 	bitmap_init(sched_allowed_cores, cpu_count, false);
@@ -699,14 +712,19 @@ int sched_init(void)
 	 */
 
 	i = bitmap_find_next_set(sched_allowed_cores, NCPU, 0);
-	sib = sched_siblings[i];
+#ifndef NOHT
+	ctrl_core = sched_siblings[i];
+#else
+	ctrl_core = bitmap_find_next_set(sched_allowed_cores, NCPU, i + 1);
+#endif
 	bitmap_clear(sched_allowed_cores, i);
-	bitmap_clear(sched_allowed_cores, sib);
-	sched_dp_core = sib;
-	sched_ctrl_core = i;
+	bitmap_clear(sched_allowed_cores, ctrl_core);
+	sched_dp_core = i;
+	sched_ctrl_core = ctrl_core;
 	log_info("sched: dataplane on %d, control on %d",
 		 sched_dp_core, sched_ctrl_core);
 
+#ifndef NOHT
 	/* check if configuration disables hyperthreads */
 	if (cfg.noht) {
 		for (i = 0; i < NCPU; i++) {
@@ -716,10 +734,12 @@ int sched_init(void)
 			bitmap_clear(sched_allowed_cores, sched_siblings[i]);
 		}
 	}
-
+#endif
 	/* generate polling arrays */
 	bitmap_for_each_set(sched_allowed_cores, NCPU, i)
 		sched_cores_tbl[sched_cores_nr++] = i;
+#ifndef NOHT
+	int sib;
 	bitmap_for_each_set(sched_allowed_cores, NCPU, i) {
 		bool found = false;
 		for (sib = 0; sib < sched_siblings_nr; sib++) {
@@ -731,6 +751,7 @@ int sched_init(void)
 		if (!found)
 			sched_siblings_tbl[sched_siblings_nr++] = i;
 	}
+#endif
 
 	return 0;
 }

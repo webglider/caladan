@@ -3,7 +3,7 @@
  */
 
 #pragma once
-
+#ifndef NOHT
 
 /*
  * Constant tunables
@@ -121,3 +121,5 @@ extern uint64_t	ias_bw_sample_failures;
 extern uint64_t ias_bw_sample_aborts;
 extern uint64_t ias_ht_punish_count;
 extern uint64_t ias_ht_relax_count;
+
+#endif

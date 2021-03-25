@@ -1,7 +1,7 @@
 /*
  * ias.c - the Interference-Aware Scheduler (IAS) policy
  */
-
+#ifndef NOHT
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
@@ -557,3 +557,4 @@ int ias_init(void)
 
 	return ias_bw_init();
 }
+#endif
