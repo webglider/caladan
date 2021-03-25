@@ -10,6 +10,7 @@ uint64_t num_blocks;
 
 #ifdef DIRECT_STORAGE
 #include <stdio.h>
+#include <stdlib.h>
 #include <base/hash.h>
 #include <base/log.h>
 #include <base/mempool.h>
@@ -66,6 +67,24 @@ static void seq_complete(void *arg, const struct spdk_nvme_cpl *completion)
 static bool probe_cb(void *cb_ctx, const struct spdk_nvme_transport_id *trid,
 		     struct spdk_nvme_ctrlr_opts *opts)
 {
+	const char *target_device = getenv("STORAGE_DEVICE");
+	if(target_device != NULL)
+	{
+		struct spdk_nvme_transport_id target_addr;
+		if(spdk_nvme_transport_id_parse	(&target_addr, target_device) == 0)
+		{
+			log_err("Detected valid target storage device");
+
+			// Only attach to given traget device
+			if(spdk_nvme_transport_id_compare(trid, &target_addr) != 0)
+			{
+				log_err("Storage device did not match target");
+				return false;
+			}
+
+			log_err("Matched target storage device");
+		}
+	}
 	opts->io_queue_size = UINT16_MAX;
 	return true;
 }
