@@ -1,7 +1,7 @@
 /*
  * ias_bw.c - the memory bandwidth subcontroller
  */
-
+#ifndef NOHT
 #include <base/stddef.h>
 #include <base/log.h>
 
@@ -279,3 +279,4 @@ int ias_bw_init(void)
 	return 0;
 
 }
+#endif
