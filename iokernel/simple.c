@@ -26,6 +26,8 @@ struct simple_data {
 	int			threads_max;
 	int			threads_active;
 
+	bool is_lc;
+
 	/* congestion info */
 	bool			waking;
 };
@@ -33,6 +35,15 @@ struct simple_data {
 static bool simple_proc_is_preemptible(struct simple_data *cursd,
 				       struct simple_data *nextsd)
 {
+	/* BE tasks can't preempt LC tasks */
+	if (cursd->is_lc && !nextsd->is_lc)
+		return false;
+
+	/* LC tasks can preempt BE tasks */
+	if (!cursd->is_lc && nextsd->is_lc)
+		return true;
+
+	// Tasks are of same type
 	return cursd->threads_active > cursd->threads_guaranteed &&
 	       nextsd->threads_active < nextsd->threads_guaranteed;
 }
@@ -93,6 +104,7 @@ static int simple_attach(struct proc *p, struct sched_spec *cfg)
 	sd->threads_active = 0;
 	sd->waking = false;
 	sd->qdelay_us = cfg->qdelay_us;
+	sd->is_lc = cfg->priority == SCHED_PRIO_LC;
 	p->policy_data = (unsigned long)sd;
 	return 0;
 }

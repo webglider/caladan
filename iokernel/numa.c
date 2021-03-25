@@ -31,6 +31,8 @@ struct numa_data {
 	int			threads_active;
 	int			preferred_socket;
 
+	bool is_lc;
+
 	/* recently used cores */
 	unsigned int		recent_cores[NRECENT];
 };
@@ -38,6 +40,15 @@ struct numa_data {
 static bool numa_proc_is_preemptible(struct numa_data *cursd,
 				struct numa_data *nextsd)
 {
+	/* BE tasks can't preempt LC tasks */
+	if (cursd->is_lc && !nextsd->is_lc)
+		return false;
+
+	/* LC tasks can preempt BE tasks */
+	if (!cursd->is_lc && nextsd->is_lc)
+		return true;
+
+	// Tasks are of same type
 	return cursd->threads_active > cursd->threads_guaranteed &&
 	       nextsd->threads_active < nextsd->threads_guaranteed;
 }
@@ -106,6 +117,7 @@ static int numa_attach(struct proc *p, struct sched_spec *cfg)
 	sd->waking = false;
 	sd->preferred_socket = cfg->preferred_socket;
 	sd->qdelay_us = cfg->qdelay_us;
+	sd->is_lc = cfg->priority == SCHED_PRIO_LC;
 	for (i = 0; i < NRECENT; i++)
 		sd->recent_cores[i] = sched_cores_tbl[0];
 	p->policy_data = (unsigned long)sd;
