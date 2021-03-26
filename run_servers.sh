@@ -2,7 +2,7 @@
 
 # Example usage: ./run_servers.sh
 
-num_cnt=$1
+numa_cnt=$1
 num_servers=$2
 
 function cleanup() {
