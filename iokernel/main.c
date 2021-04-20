@@ -165,7 +165,11 @@ int main(int argc, char *argv[])
 			return -EINVAL;
 		}
 	} else {
+#ifndef NOHT
 		sched_ops = &ias_ops;
+#else
+		sched_ops = &simple_ops;
+#endif
 	}
 
 	for (i = 2; i < argc; i++) {
