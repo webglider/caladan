@@ -15,6 +15,8 @@ extern "C" {
 
 #include "reflex.h"
 
+#define RAM_DISK 1
+
 constexpr unsigned int kSectorSize = 512;
 constexpr uint64_t kStorageServicePort = 5000;
 constexpr uint64_t kMaxSectorsPerPayload = 256;
@@ -79,7 +81,7 @@ void HandleGetRequest(RequestContext *ctx) {
   ssize_t ret = storage_read(ctx->buf, ctx->header.lba, ctx->header.lba_count);
   #else
   unsigned char *target_addr = g_ram_disk.get() + ((ctx->header.lba) % (RAM_DISK_SIZE/kSectorSize)) * kSectorSize;
-  memcpy(ctx->buf, target_addr, ctx->header.lba_count * kSectorSize);
+  //memcpy(ctx->buf, target_addr, ctx->header.lba_count * kSectorSize);
   ssize_t ret = 0;
   #endif
   if (ret < 0)
@@ -94,7 +96,7 @@ void HandleGetRequest(RequestContext *ctx) {
           .iov_len = sizeof(ctx->header),
       },
       {
-          .iov_base = &ctx->buf,
+          .iov_base = target_addr,
           .iov_len = payload_size,
       },
   };
