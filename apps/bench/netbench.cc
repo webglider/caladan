@@ -28,7 +28,7 @@ namespace {
 using sec = std::chrono::duration<double, std::micro>;
 
 const int kRxBufSize = 262144;
-const int kBandwidth = 100000000000;
+const double kBandwidth = 100e9;
 
 // the number of worker threads to spawn.
 int tx_threads;
@@ -62,7 +62,7 @@ void ServerWorker(std::unique_ptr<rt::TcpConn> c) {
   }
 }
 
-void ServerHandler(void *arg) {
+void ServerHandler() {
   std::unique_ptr<rt::TcpQueue> q(rt::TcpQueue::Listen({0, kNetbenchPort},
 				  4096));
   if (q == nullptr) panic("couldn't listen for connections");
@@ -146,7 +146,7 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
       bytes_sent += flow_size;
       sched_idx += 1;
     } else {
-      rt::Sleep(sched[i] - (microtime() - expstart));
+      rt::Sleep(sched[sched_idx] - (microtime() - expstart));
     }
     
   }
@@ -156,15 +156,15 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
 }
 
 
-int StringToAddr(const char *str, uint32_t *addr) {
-  uint8_t a, b, c, d;
+// int StringToAddr(const char *str, uint32_t *addr) {
+//   uint8_t a, b, c, d;
 
-  if(sscanf(str, "%hhu.%hhu.%hhu.%hhu", &a, &b, &c, &d) != 4)
-    return -EINVAL;
+//   if(sscanf(str, "%hhu.%hhu.%hhu.%hhu", &a, &b, &c, &d) != 4)
+//     return -EINVAL;
 
-  *addr = MAKE_IP_ADDR(a, b, c, d);
-  return 0;
-}
+//   *addr = MAKE_IP_ADDR(a, b, c, d);
+//   return 0;
+// }
 
 void MainHandler(void *arg) {
   
@@ -174,7 +174,7 @@ void MainHandler(void *arg) {
   // Start TX threads
   std::vector<rt::Thread> ths;
   for(int i = 0; i < tx_threads; i++) {
-    ths.emplace_back(rt::Thread([=]{(PoissionWorker(my_idx, num_peers, flow_size duration, load/tx_threads));}));
+    ths.emplace_back(rt::Thread([=]{(PoissonWorker(my_idx, num_peers, flow_size, duration, load/tx_threads));}));
   }
 
   for (auto &t : ths) t.Join();
