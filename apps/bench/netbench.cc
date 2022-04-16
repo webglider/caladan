@@ -171,6 +171,10 @@ void MainHandler(void *arg) {
   // Start server thread
   rt::Thread([=]{ServerHandler();}).Detach();
 
+  std::cout << "Launched server thread\n";
+
+  rt::Sleep(10*1e6);
+
   // Start TX threads
   std::vector<rt::Thread> ths;
   for(int i = 0; i < tx_threads; i++) {
