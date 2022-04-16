@@ -56,6 +56,8 @@ linux_mech_bench_obj = $(linux_mech_bench_src:.cc=.o)
 storage_client_src = storage_client.cc
 storage_client_obj = $(storage_client_src:.cc=.o)
 
+cpu_intensive_src = cpu_intensive.cc
+cpu_intensive_obj = $(cpu_intensive_src:.cc=.o)
 
 
 librt_libs = $(ROOT_PATH)/bindings/cc/librt++.a
@@ -64,7 +66,7 @@ INC += -I$(ROOT_PATH)/bindings/cc
 # must be first
 all: tbench callibrate stress efficiency efficiency_linux \
      netbench netbench2 netbench_udp netbench_linux netperf linux_mech_bench \
-     stress_linux memcached_router flash_client storage_bench storage_client
+     stress_linux memcached_router flash_client storage_bench storage_client cpu_intensive
 
 tbench: $(tbench_obj) $(librt_libs) $(RUNTIME_DEPS)
 	$(LDXX) -o $@ $(LDFLAGS) $(tbench_obj) $(librt_libs) $(RUNTIME_LIBS)
@@ -126,11 +128,15 @@ storage_client: $(rpclib_obj) $(storage_client_obj) $(librt_libs) $(RUNTIME_DEPS
 	$(LDXX)  -o $@ $(LDFLAGS) $(rpclib_obj) $(storage_client_obj) \
 	$(librt_libs) $(RUNTIME_LIBS)
 
+cpu_intensive: $(cpu_intensive_obj) $(librt_libs) $(RUNTIME_DEPS)
+	$(LDXX)  -o $@ $(LDFLAGS) $(cpu_intensive_obj) \
+	$(librt_libs) $(RUNTIME_LIBS)
+
 # general build rules for all targets
 src = $(fake_worker_src) $(tbench_src) $(callibrate_src) $(memcached_router_src) $(rpclib_src)
 src += $(stress_src) $(efficiency_src) $(efficiency_linux_src) $(netbench_src) $(flash_client_src)
 src += $(netbench2_src) $(netbench_udp_src) $(netbench_linux_src) $(netperf_src)
-src += $(linux_mech_bench_src) $(storage_bench_src) $(storage_client_src)
+src += $(linux_mech_bench_src) $(storage_bench_src) $(storage_client_src) $(cpu_intensive_src)
 obj = $(src:.cc=.o)
 dep = $(obj:.o=.d)
 
@@ -150,4 +156,4 @@ clean:
 	rm -f $(obj) $(dep) tbench callibrate stress efficiency \
 	efficiency_linux netbench netbench2 netbench_udp netbench_linux \
 	netperf linux_mech_bench stress_linux memcached_router flash_client \
-	storage_bench storage_client
+	storage_bench storage_client cpu_intensive
