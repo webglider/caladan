@@ -1,0 +1,11 @@
+--- drivers/net/ifc/base/ifcvf.h	2022-04-15 22:24:22.381277558 -0400
++++ drivers/net/ifc/base/ifcvf.h.new	2022-04-15 22:35:32.871608360 -0400
+@@ -13,7 +13,7 @@
+ #define IFCVF_SUBSYS_DEVICE_ID	0x001A
+ 
+ #define IFCVF_MAX_QUEUES		1
+-#define VIRTIO_F_IOMMU_PLATFORM		33
++//#define VIRTIO_F_IOMMU_PLATFORM		33
+ 
+ /* Common configuration */
+ #define IFCVF_PCI_CAP_COMMON_CFG	1
