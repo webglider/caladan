@@ -193,7 +193,7 @@ void MainHandler(void *arg) {
 
   for (auto &t : ths) t.Join();
 
-  rt::Sleep(10*1e6)
+  rt::Sleep(10*1e6);
 
 }
 
