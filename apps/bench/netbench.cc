@@ -181,7 +181,7 @@ void MainHandler(void *arg) {
   // Start TX threads
   std::vector<rt::Thread> ths;
   for(int i = 0; i < tx_threads; i++) {
-    ths.emplace_back(rt::Thread([=]{(PoissonWorker(my_idx, num_peers, flow_size, duration, load/tx_threads));}));
+    ths.emplace_back(rt::Thread([=]{(PoissonWorker(my_idx, num_peers, flow_size, duration, load));}));
   }
 
   for (auto &t : ths) t.Join();
