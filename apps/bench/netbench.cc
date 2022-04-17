@@ -67,6 +67,8 @@ void ServerHandler() {
 				  4096));
   if (q == nullptr) panic("couldn't listen for connections");
 
+  std::cout << "server thread running\n";
+
   while (true) {
     rt::TcpConn *c = q->Accept();
     if (c == nullptr) panic("couldn't accept a connection");
@@ -195,15 +197,16 @@ int main(int argc, char *argv[]) {
   int ret;
 
   if (argc < 7) {
-    std::cerr << "usage: [cfg_file] [num_peers] [flow-size] [tx-threads] [duration] [load]" << std::endl;
+    std::cerr << "usage: [cfg_file] [num_peers] [my_idx] [flow-size] [tx-threads] [duration] [load]" << std::endl;
     return -EINVAL;
   }
 
   num_peers = std::stoi(argv[2], nullptr, 0);
-  flow_size = std::stoi(argv[3], nullptr, 0);
-  tx_threads = std::stoi(argv[4], nullptr, 0);
-  duration = std::stoi(argv[5], nullptr, 0);
-  load = std::stod(argv[6], nullptr);
+  my_idx = std::stoi(argv[3], nullptr, 0);
+  flow_size = std::stoi(argv[4], nullptr, 0);
+  tx_threads = std::stoi(argv[5], nullptr, 0);
+  duration = std::stoi(argv[6], nullptr, 0);
+  load = std::stod(argv[7], nullptr);
 
   ret = runtime_init(argv[1], MainHandler, NULL);
   if (ret) {
