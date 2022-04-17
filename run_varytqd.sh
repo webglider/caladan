@@ -1,7 +1,7 @@
 #!/bin/bash
 
 config="const50-varytqd"
-target="192.168.11.115:8080"
+target="192.168.10.115:8080"
 sz=$((128*1024))
 qd=8
 
