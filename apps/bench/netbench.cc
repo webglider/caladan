@@ -97,7 +97,7 @@ uint64_t PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, d
       continue;
     }
     std::unique_ptr<rt::TcpConn> outc(rt::TcpConn::Dial({0, 0}, peer_addr[i]));
-    if (unlikely(outc == nullptr)) panic("couldn't connect to raddr.");
+    if (unlikely(outc == nullptr)) panic("couldn't connect to node %d.", i);
     std::cout << "connection created\n";
     conns.emplace_back(std::move(outc));
     npeers += 1;
