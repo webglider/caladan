@@ -50,6 +50,7 @@ int flow_size;
 int my_idx;
 
 void ServerWorker(std::unique_ptr<rt::TcpConn> c) {
+  std::cout << "server conn worker started\n";
   char *buf = (char *) malloc(kRxBufSize);
 
   while (true) {
@@ -73,6 +74,7 @@ void ServerHandler() {
 
   while (true) {
     rt::TcpConn *c = q->Accept();
+    std::cout << "accepted conn\n";
     if (c == nullptr) panic("couldn't accept a connection");
     rt::Thread([=]{ServerWorker(std::unique_ptr<rt::TcpConn>(c));}).Detach();
   }
