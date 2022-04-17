@@ -50,7 +50,7 @@ int flow_size;
 int my_idx;
 
 void ServerWorker(std::unique_ptr<rt::TcpConn> c) {
-  char *buf = malloc(kRxBufSize);
+  char *buf = (char *) malloc(kRxBufSize);
 
   while (true) {
     // Read data
@@ -82,7 +82,7 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
 {
   std::cout << "worker thread started\n";
 
-  char *buf = malloc(kRxBufSize);
+  char *buf = (char *) malloc(kRxBufSize);
 
   // Seed the random generator.
   std::mt19937 g(microtime());
