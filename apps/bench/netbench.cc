@@ -92,7 +92,7 @@ uint64_t PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, d
   std::vector<std::unique_ptr<rt::TcpConn>> conns;
 
   int npeers = 0;
-  for(int i = 0; i < num_nodes; i++) {
+  for(int i = num_nodes-1; i >= 0; i--) {
     if(i == my_idx) {
       continue;
     }
