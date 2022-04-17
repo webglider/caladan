@@ -98,7 +98,7 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
     if (unlikely(outc == nullptr)) panic("couldn't connect to raddr.");
     std::cout << "connection created\n";
     conns.emplace_back(std::move(outc));
-    neers += 1;
+    npeers += 1;
   }
 
   std::cout << "Connected to all peers\n";
