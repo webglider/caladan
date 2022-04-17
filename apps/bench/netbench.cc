@@ -204,7 +204,7 @@ void MainHandler(void *arg) {
     total_bytes += bytes;
   }
 
-  std::cout << "Throughput (Gbps): " << ((double)(total_bytes*8))/(duration*1e9);
+  std::cout << "Throughput (Gbps): " << ((double)(total_bytes*8))/(duration*1e9) << "\n";
 
   rt::Sleep(10*1e6);
 
