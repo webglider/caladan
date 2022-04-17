@@ -78,6 +78,7 @@ void ServerHandler() {
 
 void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, double load)
 {
+  std::cout << "worker thread started\n";
 
   char buf[kRxBufSize];
 
@@ -196,7 +197,7 @@ int main(int argc, char *argv[]) {
 
   int ret;
 
-  if (argc < 7) {
+  if (argc < 8) {
     std::cerr << "usage: [cfg_file] [num_peers] [my_idx] [flow-size] [tx-threads] [duration] [load]" << std::endl;
     return -EINVAL;
   }
