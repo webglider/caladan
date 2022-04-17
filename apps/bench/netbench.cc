@@ -180,19 +180,19 @@ uint64_t PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, d
 
 void MainHandler(void *arg) {
 
-  barrier();
-  uint64_t start_tim = microtime();
-  barrier();
-  while(true) {
-    barrier();
-    uint64_t cur_tim = microtime();
-    barrier();
+  // barrier();
+  // uint64_t start_tim = microtime();
+  // barrier();
+  // while(true) {
+  //   barrier();
+  //   uint64_t cur_tim = microtime();
+  //   barrier();
 
-    if(cur_tim - start_tim >= 60*1e6) {
-      break;
-    }
-  }
-  return;
+  //   if(cur_tim - start_tim >= 60*1e6) {
+  //     break;
+  //   }
+  // }
+  // return;
   
   // Start server thread
   rt::Thread([=]{ServerHandler();}).Detach();
