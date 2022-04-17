@@ -216,10 +216,10 @@ int main(int argc, char *argv[]) {
   
   str_to_netaddr("192.168.10.116:8001", &peer_addr[0]);
   str_to_netaddr("192.168.10.117:8001", &peer_addr[1]);
-  str_to_netaddr("192.168.10.122:8001", &peer_addr[2]);
-  str_to_netaddr("192.168.10.123:8001", &peer_addr[3]);
-  str_to_netaddr("192.168.10.124:8001", &peer_addr[4]);
-  str_to_netaddr("192.168.10.125:8001", &peer_addr[5]);
+  //str_to_netaddr("192.168.10.122:8001", &peer_addr[2]);
+  //str_to_netaddr("192.168.10.123:8001", &peer_addr[3]);
+  str_to_netaddr("192.168.10.124:8001", &peer_addr[2]);
+  str_to_netaddr("192.168.10.125:8001", &peer_addr[3]);
 
   int ret;
 
