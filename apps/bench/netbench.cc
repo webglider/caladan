@@ -105,6 +105,20 @@ uint64_t PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, d
 
   std::cout << "Connected to all peers\n";
 
+  barrier();
+  uint64_t start_tim = microtime();
+  barrier();
+  while(true) {
+    barrier();
+    uint64_t cur_tim = microtime();
+    barrier();
+
+    if(cur_tim - start_tim >= 60*1e6) {
+      break;
+    }
+  }
+  return 0;
+
   std::uniform_int_distribution<> uniform_distr(0, npeers-1);
   
 
