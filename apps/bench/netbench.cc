@@ -191,6 +191,9 @@ void MainHandler(void *arg) {
   std::vector<rt::Thread> ths;
   std::vector<uint64_t> bytes_sent;
   for(int i = 0; i < tx_threads; i++) {
+    bytes_sent.push_back(0);
+  }
+  for(int i = 0; i < tx_threads; i++) {
     ths.emplace_back(rt::Thread([=, &bytes_sent]{bytes_sent[i] = PoissonWorker(my_idx, num_peers, flow_size, duration, load/tx_threads);}));
   }
 
