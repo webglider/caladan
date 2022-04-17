@@ -84,20 +84,21 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
 
   std::vector<std::unique_ptr<rt::TcpConn>> conns;
 
-  int num_peers = 0;
+  int npeers = 0;
   for(int i = 0; i < num_nodes; i++) {
     if(i == my_idx) {
       continue;
     }
     std::unique_ptr<rt::TcpConn> outc(rt::TcpConn::Dial({0, 0}, peer_addr[i]));
     if (unlikely(outc == nullptr)) panic("couldn't connect to raddr.");
+    std::cout << "connection created\n"; 
     conns.emplace_back(std::move(outc));
-    num_peers += 1;
+    npeers += 1;
   }
 
   std::cout << "Connected to all peers\n";
 
-  std::uniform_int_distribution<> uniform_distr(0, num_peers-1);
+  std::uniform_int_distribution<> uniform_distr(0, npeers-1);
   
 
   // Create a packet transmit schedule.
