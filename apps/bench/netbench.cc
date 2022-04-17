@@ -114,7 +114,7 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
   std::exponential_distribution<double> rd(kBandwidth * load / (flow_size * 8.0 / 1460 * 1500));
   std::vector<double> tmp;
   double total_time = 0;
-  int bytes_sent = 0;
+  int64_t bytes_sent = 0;
 
   while(total_time < duration) {
     double ia_time = rd(g);
