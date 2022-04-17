@@ -80,7 +80,7 @@ void ServerHandler() {
   }
 }
 
-void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, double load)
+uint64_t PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, double load)
 {
   std::cout << "worker thread started\n";
 
@@ -114,7 +114,7 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
   std::exponential_distribution<double> rd(kBandwidth * load / (flow_size * 8.0 / 1460 * 1500));
   std::vector<double> tmp;
   double total_time = 0;
-  int64_t bytes_sent = 0;
+  uint64_t bytes_sent = 0;
 
   while(total_time < duration) {
     double ia_time = rd(g);
@@ -163,6 +163,8 @@ void PoissonWorker(int my_idx, int num_nodes, int flow_size, int duration, doubl
 
   free(buf);
 
+  return bytes_sent;
+
 }
 
 
@@ -187,11 +189,19 @@ void MainHandler(void *arg) {
 
   // Start TX threads
   std::vector<rt::Thread> ths;
+  std::vector<uint64_t> bytes_sent;
   for(int i = 0; i < tx_threads; i++) {
-    ths.emplace_back(rt::Thread([=]{(PoissonWorker(my_idx, num_peers, flow_size, duration, load));}));
+    ths.emplace_back(rt::Thread([=, &bytes_sent]{bytes_sent[i] = PoissonWorker(my_idx, num_peers, flow_size, duration, load/tx_threads);}));
   }
 
   for (auto &t : ths) t.Join();
+
+  uint64_t total_bytes = 0;
+  for(auto bytes : bytes_sent) {
+    total_bytes += bytes;
+  }
+
+  std::cout << "Throughput (Gbps): " << ((double)(total_bytes*8))/(duration*1e9);
 
   rt::Sleep(10*1e6);
 
