@@ -55,7 +55,7 @@ void ServerWorker(std::unique_ptr<rt::TcpConn> c) {
 
   while (true) {
     // Read data
-    ssize_t ret = c->Read(&buf, kRxBufSize);
+    ssize_t ret = c->Read(buf, kRxBufSize);
     if (ret <= 0 || ret > kRxBufSize) {
       if (ret == 0 || ret == -ECONNRESET) break;
       panic("read failed, ret = %ld", ret);
